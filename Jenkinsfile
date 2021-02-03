@@ -1,22 +1,17 @@
 
 pipeline {
-  agent none
+  agent any
   options { 
     //only keep logs for 5 runs
     buildDiscarder(logRotator(numToKeepStr: '2')) 
     //declarative does a checkout automatically, set this to disable
     
   }
-  environment {
-    buildtype='package'
-  }
-  parameters {
-        choice(name: 'Branch', choices: Nirmit)
-  }
+
   stages {
 
     stage("Prepare Build Environment") {
-      agent { label "nodejs" }
+      
       steps {
         scripts {
           sh 'npm install'
@@ -25,7 +20,7 @@ pipeline {
     }
     
     stage("Publish Build Environment") {
-      agent { label "nodejs" }
+     
       steps {
         scripts {
            echo "npm publish <Artifactory URL>"
@@ -34,7 +29,7 @@ pipeline {
     }
     
     stage("Bundle AWS Artifact") {
-      agent { label "nodejs" }
+      
       environment {
         appname='myapp1'
       }
@@ -48,7 +43,7 @@ pipeline {
     }
     
     stage("Publish AWS Artifact") {
-      agent { label "nodejs" }
+     
       steps {
         scripts {
            echo "curl -LO  myapp.tgz <ArtifactoryURL>"
@@ -57,7 +52,7 @@ pipeline {
     }
     
     stage("AWS Deploy") {
-      agent { label "nodejs" }
+      
       steps {
         scripts {
            echo "aws cloudformation create myapp.tgz"
